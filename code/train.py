@@ -5,6 +5,7 @@ import torch.nn as nn
 import os
 import numpy as np
 from network import DeepSeparator
+from torch.utils.tensorboard import SummaryWriter
 
 
 def standardization(data):
@@ -77,6 +78,10 @@ test_loader = Data.DataLoader(
     shuffle=False,
 )
 
+# Create a SummaryWriter object
+writer = SummaryWriter('logs')
+
+
 print("torch.cuda.is_available() = ", torch.cuda.is_available())
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -115,7 +120,9 @@ for epoch in range(epochs):
         total_train_loss_per_epoch += train_loss.item()
 
         print("Epoch {}. Training step {}/{}. Mini-batch loss: {:.4f}. Mini-batch accuracy: {:.4f}".format(epoch+1, step+1, len(train_loader), train_loss.item(), mini_acc))
-
+        writer.add_scalar('train/loss', train_loss, epoch)
+        writer.add_scalar('train/acc', mini_acc, epoch)
+        
         train_loss.backward()
         optimizer.step()
 
