@@ -111,8 +111,10 @@ for epoch in range(epochs):
         train_preds = model(train_input, indicator)
 
         train_loss = loss(train_preds, train_output)
-
+        mini_acc = 1 - float(torch.sum(torch.abs(train_preds - train_output))) / float(torch.sum(torch.abs(train_output)))
         total_train_loss_per_epoch += train_loss.item()
+
+        print("Epoch {}. Training step {}/{}. Mini-batch loss: {:.4f}. Mini-batch accuracy: {:.4f}".format(epoch+1, step+1, len(train_loader), train_loss.item(), mini_acc))
 
         train_loss.backward()
         optimizer.step()
@@ -127,7 +129,7 @@ for epoch in range(epochs):
     average_test_loss_per_epoch = 0
 
     if epoch % test_frequency == 0:
-
+        
         for step, (test_input, test_indicator, test_output) in enumerate(test_loader):
 
             test_step_num += 1
